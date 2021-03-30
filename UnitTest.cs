@@ -3,6 +3,7 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace resvg_tests
 {
@@ -23,7 +24,10 @@ namespace resvg_tests
             string filename = System.IO.Path.GetFileNameWithoutExtension(svgPath);
             bitmap.Save($"pngs/{filename}.png");
 
-            Assert.Pass();
+            // we probably need a better comparison when running on multiple platforms
+            byte[] base_bytes = System.IO.File.ReadAllBytes($"result_pngs/{filename}.png");
+            byte[] written_bytes = System.IO.File.ReadAllBytes($"pngs/{filename}.png");
+            Assert.AreEqual(base_bytes, written_bytes);
         }
 
         private static IEnumerable<TestCaseData> SvgTestCaseData
