@@ -22,12 +22,22 @@ namespace resvg_tests
             string svg = System.IO.File.ReadAllText(svgPath);
             var bitmap = Resvg.BitmapFromSvg(svg, 32, 32);
             string filename = System.IO.Path.GetFileNameWithoutExtension(svgPath);
-            bitmap.Save($"pngs/{filename}.png");
+            //bitmap.Save($"pngs/{filename}.png");
 
             // we probably need a better comparison when running on multiple platforms
-            byte[] base_bytes = System.IO.File.ReadAllBytes($"result_pngs/{filename}.png");
-            byte[] written_bytes = System.IO.File.ReadAllBytes($"pngs/{filename}.png");
-            Assert.AreEqual(base_bytes, written_bytes);
+            var resultsBitmap = Image.FromFile($"result_pngs/{filename}.png") as Bitmap;
+            Assert.AreEqual(bitmap.Width, resultsBitmap.Width);
+            Assert.AreEqual(bitmap.Height, resultsBitmap.Height);
+            for (int x=0; x<resultsBitmap.Width; x++)
+            {
+                for (int y=0; y<resultsBitmap.Height; y++)
+                {
+                    var c1 = resultsBitmap.GetPixel(x, y);
+                    var c2 = bitmap.GetPixel(x, y);
+                    Assert.AreEqual(c1, c2);
+                }
+            }
+            bitmap.Dispose();
         }
 
         private static IEnumerable<TestCaseData> SvgTestCaseData
